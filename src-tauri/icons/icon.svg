@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#206a45"/>
+  <path d="M92 356c64-48 112-72 164-72s100 24 164 72" fill="none" stroke="#f4f6f3" stroke-width="28" stroke-linecap="round"/>
+  <path d="M92 156c64 48 112 72 164 72s100-24 164-72" fill="none" stroke="#f4f6f3" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="74" fill="#ffffff"/>
+  <path d="M256 191l62 45-24 72h-76l-24-72z" fill="#243026"/>
+  <path d="M256 191v65l62-20M256 256l38 52M256 256l-38 52M256 256l-62-20" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="256" y="438" fill="#ffffff" font-family="PingFang SC, Arial, sans-serif" font-size="56" font-weight="700" text-anchor="middle">约球</text>
+</svg>
