@@ -3,7 +3,7 @@ services:
     name: zjnu-staff-football
     runtime: node
     plan: free
-    buildCommand: npm ci --ignore-scripts && npm run build
+    buildCommand: npm ci --include=dev --ignore-scripts && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
