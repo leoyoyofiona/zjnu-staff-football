@@ -912,11 +912,21 @@ function WorkCard({ work, index }: { work: (typeof LEO_WORKS)[number]; index: nu
 }
 
 function QrPlaceholder({ label }: { label: string }) {
+  const [imageReady, setImageReady] = useState(false)
+  const source = label === '支付宝' ? '/alipay-qr.png' : '/wechat-qr.png'
+
   return (
     <div className="qr-placeholder">
-      <QrCode size={38} strokeWidth={1.3} />
+      <img
+        className={clsx('qr-image', !imageReady && 'qr-image-hidden')}
+        src={source}
+        alt={`${label}收款码`}
+        onLoad={() => setImageReady(true)}
+        onError={() => setImageReady(false)}
+      />
+      {!imageReady && <QrCode size={38} strokeWidth={1.3} />}
       <strong>{label}收款码</strong>
-      <span>待上传原图</span>
+      <span>{imageReady ? '扫码支持' : '待上传原图'}</span>
     </div>
   )
 }

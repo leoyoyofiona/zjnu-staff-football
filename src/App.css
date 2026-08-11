@@ -1038,6 +1038,19 @@ label {
   color: var(--nav-accent);
 }
 
+.qr-image {
+  display: block;
+  width: 128px;
+  height: 128px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: #fff;
+}
+
+.qr-image-hidden {
+  display: none;
+}
+
 .qr-placeholder strong {
   color: var(--nav-text);
   font-size: 13px;
