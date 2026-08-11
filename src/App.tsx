@@ -1,21 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { Dispatch, FormEvent, RefObject, SetStateAction } from 'react'
+import type { Dispatch, FormEvent, ReactNode, RefObject, SetStateAction } from 'react'
 import { toPng } from 'html-to-image'
 import clsx from 'clsx'
 import {
+  ArrowUpRight,
+  BriefcaseBusiness,
   CalendarDays,
+  ChevronDown,
   ClipboardList,
+  Coffee,
   Download,
   Eye,
+  GitFork,
   ListChecks,
   LockKeyhole,
   LogOut,
+  Mail,
+  Moon,
+  PanelsTopLeft,
   Plus,
+  QrCode,
   RefreshCw,
   Save,
   Settings,
   Shirt,
   Shuffle,
+  ShieldAlert,
+  Sun,
   Table2,
   Trophy,
   Users,
@@ -35,6 +46,7 @@ import type {
   ScoringRule,
   TeamCount,
 } from './domain/types'
+import { LEO_WORKS } from './data/leoWorks'
 import { useAppState } from './hooks/useAppState'
 import { makeId, todayLocalIso } from './utils/id'
 
@@ -54,6 +66,8 @@ type StatKey =
   | 'redCards'
   | 'referee'
   | 'assistantReferee'
+
+type ThemeMode = 'light' | 'dark'
 
 const TABS: Array<{ key: TabKey; label: string; icon: LucideIcon }> = [
   { key: 'activity', label: '活动', icon: CalendarDays },
@@ -75,6 +89,7 @@ const STAT_FIELDS: Array<{ key: StatKey; label: string }> = [
 ]
 
 const DEFAULT_LOCATION = '浙师大足球场'
+const THEME_STORAGE_KEY = 'zjnu-staff-football-theme'
 
 function App() {
   const {
@@ -105,6 +120,10 @@ function App() {
   const [newPlayerAliases, setNewPlayerAliases] = useState('')
   const [loginForm, setLoginForm] = useState({ username: 'admin', password: '' })
   const [loginBusy, setLoginBusy] = useState(false)
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
+    return stored === 'dark' ? 'dark' : 'light'
+  })
   const sessionReportRef = useRef<HTMLDivElement>(null)
   const annualReportRef = useRef<HTMLDivElement>(null)
 
@@ -120,6 +139,11 @@ function App() {
 
     return TABS.filter((tab) => ['activity', 'teams', 'matches', 'stats'].includes(tab.key))
   }, [canEdit])
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = themeMode
+    window.localStorage.setItem(THEME_STORAGE_KEY, themeMode)
+  }, [themeMode])
 
   useEffect(() => {
     if (!activeSessionId && state.sessions.length) {
@@ -529,10 +553,119 @@ function App() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <div>
-          <p className="eyebrow">ZJNU Staff Football</p>
-          <h1>浙师大教工约球</h1>
-        </div>
+        <button type="button" className="leo-brand" onClick={() => setActiveTab('activity')}>
+          <span className="leo-mark" aria-hidden="true">
+            LEO<span>.</span>
+          </span>
+          <span className="leo-brand-copy">
+            <strong>浙师大教工约球</strong>
+            <small>STAFF FOOTBALL / ORGANIZER DESK</small>
+          </span>
+        </button>
+        <nav className="top-menu" aria-label="LEO主导航">
+          <TopMenu icon={PanelsTopLeft} label="约球工作台">
+            <div className="workbench-menu">
+              <div className="dropdown-intro">
+                <span className="dropdown-kicker">ZJNU STAFF FOOTBALL</span>
+                <strong>把一场球，安排得更漂亮。</strong>
+                <p>接龙、随机分队、赛后数据和年度榜单，都在这里完成。</p>
+              </div>
+              <div className="workbench-links">
+                {visibleTabs.map((tab) => {
+                  const Icon = tab.icon
+                  return (
+                    <button
+                      type="button"
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                    >
+                      <Icon size={16} />
+                      <span>{tab.label}</span>
+                      <ArrowUpRight size={14} />
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="menu-stat-line">
+                <span><strong>{state.sessions.length}</strong> 场活动</span>
+                <span><strong>{state.players.length}</strong> 位老师</span>
+                <span><strong>{selectedYear}</strong> 年榜单</span>
+              </div>
+            </div>
+          </TopMenu>
+
+          <TopMenu icon={BriefcaseBusiness} label="LEO作品" wide>
+            <div className="works-dropdown">
+              <div className="works-heading">
+                <div>
+                  <span className="dropdown-kicker">LEO / OPEN WORKS</span>
+                  <strong>一些认真做过的东西</strong>
+                </div>
+                <span className="works-count">{LEO_WORKS.length} PROJECTS</span>
+              </div>
+              <div className="works-grid">
+                {LEO_WORKS.map((work, index) => (
+                  <WorkCard key={work.title} work={work} index={index} />
+                ))}
+              </div>
+              <div className="works-footer">
+                <GitFork size={15} />
+                <span>所有作品优先保留真实的 GitHub 入口，持续更新中。</span>
+                <a href="https://github.com/leoyoyofiona" target="_blank" rel="noreferrer">
+                  查看 GitHub <ArrowUpRight size={14} />
+                </a>
+              </div>
+            </div>
+          </TopMenu>
+
+          <TopMenu icon={Coffee} label="请LEO喝球咖啡">
+            <div className="coffee-dropdown">
+              <div className="coffee-copy">
+                <span className="dropdown-kicker">SPONSOR THE NEXT BUILD</span>
+                <strong>如果这个小工具帮你省下了一点时间</strong>
+                <p>欢迎请 LEO 喝一杯球场边的咖啡。每一杯都用来继续做些有趣、好用的小作品。</p>
+              </div>
+              <div className="qr-grid">
+                <QrPlaceholder label="支付宝" />
+                <QrPlaceholder label="微信" />
+              </div>
+              <p className="qr-note">二维码图片待放入后即可扫码。请上传支付宝和微信收款码原图，我会直接替换这两个位置。</p>
+            </div>
+          </TopMenu>
+
+          <TopMenu icon={Mail} label="联系LEO">
+            <div className="contact-dropdown">
+              <span className="dropdown-kicker">SAY HELLO</span>
+              <strong>想聊作品、合作或下一场球？</strong>
+              <a className="contact-link" href="mailto:leooelcn@gmail.com">
+                <Mail size={17} />
+                <span>leooelcn@gmail.com</span>
+                <ArrowUpRight size={14} />
+              </a>
+              <a className="contact-link" href="https://github.com/leoyoyofiona" target="_blank" rel="noreferrer">
+                <GitFork size={17} />
+                <span>github.com/leoyoyofiona</span>
+                <ArrowUpRight size={14} />
+              </a>
+              <p>欢迎反馈使用体验，也欢迎带着真实问题来找我一起做一个小工具。</p>
+            </div>
+          </TopMenu>
+
+          <TopMenu icon={themeMode === 'dark' ? Moon : Sun} label="显示模式">
+            <div className="theme-dropdown">
+              <span className="dropdown-kicker">GLOBAL APPEARANCE</span>
+              <strong>整个页面一起切换</strong>
+              <button type="button" className={clsx('theme-option', themeMode === 'light' && 'selected')} onClick={() => setThemeMode('light')}>
+                <Sun size={17} />
+                <span><b>白天模式</b><small>清爽、明亮、适合球场白天使用</small></span>
+              </button>
+              <button type="button" className={clsx('theme-option', themeMode === 'dark' && 'selected')} onClick={() => setThemeMode('dark')}>
+                <Moon size={17} />
+                <span><b>夜间模式</b><small>低亮、沉浸、适合晚上约球</small></span>
+              </button>
+            </div>
+          </TopMenu>
+        </nav>
         <div className="topbar-actions">
           <button type="button" className="icon-button" onClick={refreshState} title="刷新服务器数据">
             <RefreshCw size={16} />
@@ -603,6 +736,15 @@ function App() {
           </span>
         </div>
       </header>
+
+      <section className="disclaimer-banner" role="note">
+        <ShieldAlert size={19} />
+        <div>
+          <strong>使用说明与免责声明</strong>
+          <p>本页面用于浙师大教工足球活动的报名、分队和内部数据记录，数据以管理员录入为准；统计结果仅供群组内部交流，不构成正式赛事认证、商业建议或任何其他承诺。</p>
+        </div>
+        <span>LEO · ORGANIZER WORKSPACE</span>
+      </section>
 
       <div className="workspace">
         <nav className="sidebar" aria-label="主要功能">
@@ -709,7 +851,73 @@ function App() {
           )}
         </section>
       </div>
+
+      <footer className="site-footer">
+        <span>LEO / ZJNU STAFF FOOTBALL</span>
+        <a href="mailto:leooelcn@gmail.com"><Mail size={14} /> leooelcn@gmail.com</a>
+        <span>访客只读 · 管理员维护</span>
+      </footer>
     </main>
+  )
+}
+
+function TopMenu({
+  icon: Icon,
+  label,
+  children,
+  wide = false,
+}: {
+  icon: LucideIcon
+  label: string
+  children: ReactNode
+  wide?: boolean
+}) {
+  return (
+    <div className={clsx('menu-group', wide && 'menu-group-wide')}>
+      <button type="button" className="menu-trigger" aria-haspopup="true">
+        <Icon size={16} />
+        <span>{label}</span>
+        <ChevronDown size={14} />
+      </button>
+      <div className="dropdown-panel">{children}</div>
+    </div>
+  )
+}
+
+function WorkCard({ work, index }: { work: (typeof LEO_WORKS)[number]; index: number }) {
+  const content = (
+    <>
+      <div className="work-card-topline">
+        <span>{String(index + 1).padStart(2, '0')}</span>
+        <ArrowUpRight size={15} />
+      </div>
+      <span className="work-kicker">{work.kicker}</span>
+      <strong>{work.title}</strong>
+      <p>{work.description}</p>
+      <div className="work-tags">
+        {work.tags.map((tag) => <span key={tag}>{tag}</span>)}
+      </div>
+    </>
+  )
+
+  if (!work.href) {
+    return <article className="work-card work-card-disabled" style={{ borderTopColor: work.accent }}>{content}</article>
+  }
+
+  return (
+    <a className="work-card" style={{ borderTopColor: work.accent }} href={work.href} target="_blank" rel="noreferrer">
+      {content}
+    </a>
+  )
+}
+
+function QrPlaceholder({ label }: { label: string }) {
+  return (
+    <div className="qr-placeholder">
+      <QrCode size={38} strokeWidth={1.3} />
+      <strong>{label}收款码</strong>
+      <span>待上传原图</span>
+    </div>
   )
 }
 
